@@ -16,21 +16,10 @@ const nodemailerMailgun = nodemailer.createTransport(mg(auth));
 module.exports.sendMail = (email, meetingNumber) => {
     nodemailerMailgun.sendMail({
         from: 'no-reply@plan-it.team',
-        to: "johnsaguay@gmail.com",
-        subject: 'Choose your availability',
-        text: `Click on this link so then you can add your availability for this date http://plan-it.team/availability/${meetingNumber}`,
+        to: `${email}`,
+        subject: 'Team Plan-it: Please add your availability to the meeting',
+        text: `The coordinator has created a meeting and has invited you! 
+                Click on this link so then you can add your availability for this date
+                   https://team-plan-it.netlify.app/availability/${meetingNumber}`,
     })
 }
-// export our send mail function
-// module.exports.sendMail = (data) => {
-//     nodemailerMailgun.sendMail({
-//         from: 'no-reply@example.com',
-//         to: 'johnsaguay@gmail.com', // An array if you have multiple recipients.
-//         subject: 'Reminder to pay all these bills!!',
-//         template: {
-//             name: './views/email.hbs',
-//             engine: 'handlebars',
-//             context: data
-//         }
-//     })
-// }
