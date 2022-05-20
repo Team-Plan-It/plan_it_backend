@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/dates', meetDateRoute);
 
-require('../backend/config/db.config')
+require('./config/db.config')
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.resolve(__dirname, "../build")));
 }
