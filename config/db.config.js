@@ -10,10 +10,14 @@ if (process.env.NODE_ENV === "development") {
     { 
       useNewUrlParser: true, useUnifiedTopology: true
     })
-    .then(
-        () => {console.log('Database is connected') },
-        err => { console.log('Can not connect to the database'+ err)}
-    );
+    .then(() => {
+      console.log("Connected to database")
+    })
+    .catch((err) => {
+      console.log("Cannot connect to database", err)
+      process.exit();
+    })
+        
 } else if (process.env.NODE_ENV === "production") {
 
   const uri = process.env.MONGODB_URI;
@@ -23,9 +27,12 @@ if (process.env.NODE_ENV === "development") {
     { 
       useNewUrlParser: true, useUnifiedTopology: true
     })
-    .then(
-        () => {console.log('Database is connected') },
-        err => { console.log('Can not connect to the database'+ err)}
-    );
+    .then(() => {
+      console.log("Connected to database")
+    })
+    .catch((err) => {
+      console.log("Cannot connect to database", err)
+      process.exit();
+    })
 }
 module.exports = mongoose.connection;

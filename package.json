@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "nodemon server.js",
-    "start": "node server.js",
+    "start": "node --optimize_for_size --max_old_space_size=460 --gc_interval=100 server.js",
     "dev": "nodemon server.js"
   },
   "author": "",
