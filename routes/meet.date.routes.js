@@ -85,7 +85,6 @@ meetDateRoute.route("/overlapping/:meetingNumber").get( async function (req, res
     const meetingNumber = req.params.meetingNumber;
     const data = await MeetDateModel.find({ meetingNumber: meetingNumber }).lean();
     const arrayOfUsers = data[0].users;
-    // console.log(`l89 - arrayOfUsers is ${arrayOfUsers}`)
     let availabilityByDateArrays = [];
     
     // function to get date from time string, returns a time object 
@@ -133,7 +132,6 @@ meetDateRoute.route("/overlapping/:meetingNumber").get( async function (req, res
               timeString = i % 2 === 0 ?`${dateString}T${(i - counter)/2}:00:00` :`${dateString}T${(i - counter)/2}:30:00`
             }
 
-            // console.log(`timeString is: ${timeString}`)
             if(i < 24){
               if (i === 1){
                 amPmTime = "12:30 am - 1:00 am"
@@ -186,7 +184,6 @@ meetDateRoute.route("/overlapping/:meetingNumber").get( async function (req, res
 
       // function for replacing objects in the availabilityByDateArrays
       const replaceExistingArray = (retrievedObject, startObj, endObj, userName, date, index) => {
-        // console.log(`replaceExistingArray function called`)
         const updatedArray = addUserToDayArray(retrievedObject, startObj, endObj, userName);
         const updatedObject = {date: date, availabilityByDateArray: updatedArray}
 
@@ -196,7 +193,6 @@ meetDateRoute.route("/overlapping/:meetingNumber").get( async function (req, res
 
       // function for creating a new object and adding availability
       const createNewArray = (date, startObj, endObj, userName) => {
-        // console.log(`createNewArray function called`)
         const newDayArray = createTimeSlots(date);
         const updatedDayArray = addUserToDayArray(newDayArray, startObj, endObj, userName);
         const updatedDayObject = {date: date, availabilityByDateArray: updatedDayArray};
@@ -225,19 +221,16 @@ meetDateRoute.route("/overlapping/:meetingNumber").get( async function (req, res
 
                 if (indexOfRetrievedStartObject !== -1 && startDate === endDate){
                   // there is an object with a matching start and end date
-                  // console.log("there is an object with a matching start and end date")
                   // add this availability to the array
                   
                   replaceExistingArray(retrievedStartObject.availabilityByDateArray, startObj, endObj, userName, startDate, indexOfRetrievedStartObject);
                 }else if (startDate === endDate) {
                   // start and end match but there is not an object with that date
-                  // console.log("start and end date match but there is not an object with that date")
                   // create new one
                   createNewArray(startDate, startObj, endObj, userName);
 
                 }else if(indexOfRetrievedStartObject !== -1 && indexOfRetrievedEndObject !== -1){
                   // there is an object that matches the start date and an object that matches the end date
-                  // console.log(" is an object that matches the start date and an object that matches the end date")
                   // add availability to the start date array at the start time and use end time of 24:00
                   replaceExistingArray(retrievedStartObject.availabilityByDateArray, startObj, {hours:24, minutes:0}, userName, startDate, indexOfRetrievedStartObject);
 
@@ -246,7 +239,6 @@ meetDateRoute.route("/overlapping/:meetingNumber").get( async function (req, res
 
                 }else if(indexOfRetrievedStartObject !== -1) {
                   // there is an object for start date but not end date
-                  // console.log("there is an object for start date but not end date")
                   // add availability to the start date array at the start time and use end time of 24:00
                   replaceExistingArray(retrievedStartObject.availabilityByDateArray, startObj, {hours:24, minutes:0}, userName, startDate, indexOfRetrievedStartObject);
 
@@ -255,7 +247,6 @@ meetDateRoute.route("/overlapping/:meetingNumber").get( async function (req, res
 
                 }else if (indexOfRetrievedEndObject !== -1){
                   // there is an object for the end date but not the start date
-                  // console.log("there is an object for the end date but not the start date")
                   // and add availability on end date array starting at 0:00 and ending at end time
                   replaceExistingArray(retrievedEndObject.availabilityByDateArray, {hours:0, minutes:0}, endObj, userName, endDate, indexOfRetrievedEndObject);
 
@@ -263,7 +254,6 @@ meetDateRoute.route("/overlapping/:meetingNumber").get( async function (req, res
                   createNewArray(startDate, startObj, {hours:24, minutes:0}, userName);
                 }else{
                   // there are no objects for the start or end date
-                  // console.log("there are no objects for the start or end date")
                   // create new one for start date with end time of 24:00
                   createNewArray(startDate, startObj, {hours:24, minutes:0}, userName);
                   // create new one with start time of 0:00
@@ -271,7 +261,6 @@ meetDateRoute.route("/overlapping/:meetingNumber").get( async function (req, res
                 }
               }else{
                 // the availabilityByDateArrays is empty
-                // console.log("the availabilityByDateArrays is empty")
                 if(startDate === endDate){
                   // create new one
                   createNewArray(startDate, startObj, endObj, userName);
@@ -283,7 +272,6 @@ meetDateRoute.route("/overlapping/:meetingNumber").get( async function (req, res
                 }
               }   
           })
-          // console.log(`l285 - availabilityByDateArrays length is ${availabilityByDateArrays.length}`)
          
       }
       else{
@@ -296,9 +284,7 @@ meetDateRoute.route("/overlapping/:meetingNumber").get( async function (req, res
     try{
       arrayOfUsers.forEach( user => {
         const userName = user.userName;
-        // console.log(`l294 - userName is ${userName}`)
         const availabilityArray = user.availability;
-        // console.log(`l299 - availabilityArray.length is ${availabilityArray.length}`)
         fillTimeSlots({availabilityArray, userName});
       });
 
@@ -329,7 +315,7 @@ meetDateRoute.route("/overlapping/:meetingNumber").get( async function (req, res
             return 1;
           }
         });
-        // console.log(sortedResults)
+
         // return the array containing all of the availability objects
         return res.send(sortedResults);
       }
