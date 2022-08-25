@@ -154,7 +154,6 @@ meetDateRoute.route("/overlapping/:meetingNumber").get( async function (req, res
               }
             }
           }
-
           timeArrayAmPm.push({ time: amPmTime, timeString: timeString, array: [] });
       }
       return timeArrayAmPm;
@@ -162,18 +161,15 @@ meetDateRoute.route("/overlapping/:meetingNumber").get( async function (req, res
 
     // function that adds user's availability block to the day array
     const addUserToDayArray = (dayArray, startObj, endObj, userName) => {
-   
-    let start = 
-      startObj.hours * 2 + 
-      (startObj.minutes === 0 ?0 :1);
-    let end =
-      endObj.hours * 2 +
-      (endObj.minutes === 0 ? 0 : 1);
-    // add user to day results for the timeblock start and end
-    for(let i=start; i < end; i++){
-      dayArray[i].array.push({user: userName, start: start, end: end, startObj: startObj, endObj: endObj})
-    }
-
+      let start = 
+        startObj.hours * 2 + 
+        (startObj.minutes === 0 ?0 :1);
+      let end =
+        endObj.hours * 2 +
+        (endObj.minutes === 0 ? 0 : 1);
+      for(let i=start; i < end; i++){
+        dayArray[i].array.push({user: userName, start: start, end: end, startObj: startObj, endObj: endObj})
+      }
     return dayArray;
     }
 
@@ -200,7 +196,6 @@ meetDateRoute.route("/overlapping/:meetingNumber").get( async function (req, res
       }
 
       if(availabilityArray.length > 0){
-          // iterate through user's availability 
           availabilityArray.forEach((availObj) => {
             
               const startObj = getDate(availObj.start);
@@ -208,38 +203,28 @@ meetDateRoute.route("/overlapping/:meetingNumber").get( async function (req, res
               const endObj = getDate(availObj.end);
               const endDate = endObj.dateString;
 
-              // availabilityByDateArrays is an array of objects, object has date and availabilityByDateArray keys
               if (availabilityByDateArrays.length > 0){
                 // availabilityByDateArrays contains objects 
-                // if it contains an object with the start date, find the object
                 const retrievedStartObject = availabilityByDateArrays.find(({date}) => date === startDate);
                 const indexOfRetrievedStartObject = availabilityByDateArrays.findIndex(object => object.date === startDate);
               
-                // check for object with end date
                 const retrievedEndObject = availabilityByDateArrays.find(({date}) => date === endDate);
                 const indexOfRetrievedEndObject = availabilityByDateArrays.findIndex(object => object.date === endDate);
 
                 if (indexOfRetrievedStartObject !== -1 && startDate === endDate){
                   // there is an object with a matching start and end date
-                  // add this availability to the array
-                  
                   replaceExistingArray(retrievedStartObject.availabilityByDateArray, startObj, endObj, userName, startDate, indexOfRetrievedStartObject);
                 }else if (startDate === endDate) {
                   // start and end match but there is not an object with that date
-                  // create new one
                   createNewArray(startDate, startObj, endObj, userName);
 
                 }else if(indexOfRetrievedStartObject !== -1 && indexOfRetrievedEndObject !== -1){
                   // there is an object that matches the start date and an object that matches the end date
-                  // add availability to the start date array at the start time and use end time of 24:00
                   replaceExistingArray(retrievedStartObject.availabilityByDateArray, startObj, {hours:24, minutes:0}, userName, startDate, indexOfRetrievedStartObject);
-
-                  // and add availability on end date array starting at 0:00 and ending at end time
                   replaceExistingArray(retrievedEndObject.availabilityByDateArray, {hours:0, minutes:0}, endObj, userName, endDate, indexOfRetrievedEndObject);
 
                 }else if(indexOfRetrievedStartObject !== -1) {
-                  // there is an object for start date but not end date
-                  // add availability to the start date array at the start time and use end time of 24:00
+                  // there is an object for start date but not end date// add availability to the start date array at the start time and use end time of 24:00
                   replaceExistingArray(retrievedStartObject.availabilityByDateArray, startObj, {hours:24, minutes:0}, userName, startDate, indexOfRetrievedStartObject);
 
                   // there is not an array for the date, need to create a new one
@@ -247,40 +232,29 @@ meetDateRoute.route("/overlapping/:meetingNumber").get( async function (req, res
 
                 }else if (indexOfRetrievedEndObject !== -1){
                   // there is an object for the end date but not the start date
-                  // and add availability on end date array starting at 0:00 and ending at end time
                   replaceExistingArray(retrievedEndObject.availabilityByDateArray, {hours:0, minutes:0}, endObj, userName, endDate, indexOfRetrievedEndObject);
-
-                  // create new one for start date with end time of 24:00
                   createNewArray(startDate, startObj, {hours:24, minutes:0}, userName);
                 }else{
                   // there are no objects for the start or end date
-                  // create new one for start date with end time of 24:00
                   createNewArray(startDate, startObj, {hours:24, minutes:0}, userName);
-                  // create new one with start time of 0:00
                   createNewArray(endDate, {hours:0, minutes:0}, endObj, userName);
                 }
               }else{
                 // the availabilityByDateArrays is empty
                 if(startDate === endDate){
-                  // create new one
                   createNewArray(startDate, startObj, endObj, userName);
                 }else{
-                  // create new one for start date with end time of 24:00
                   createNewArray(startDate, startObj, {hours:24, minutes:0}, userName);
-                  // create new one with start time of 0:00
                   createNewArray(endDate, {hours:0, minutes:0}, endObj, userName);
                 }
               }   
           })
-         
       }
       else{
         // console.log(`l287 - availabilityArray.length is not greater than 0`)
       }
-    } // end of fillTimeSlots function
+    } 
 
-    // iterate through array of users
-    // call fillTImeSlots function to add each user's availability to the availabilityByDateArrays
     try{
       arrayOfUsers.forEach( user => {
         const userName = user.userName;
@@ -298,15 +272,12 @@ meetDateRoute.route("/overlapping/:meetingNumber").get( async function (req, res
           return timeslotsWithAvail;
         }
         
-        // iterate through the availabilityByDateArrays
-        // return only timeSlots in each availability array that have a length > 0
         const filtredByDateAvailabilityArrays = availabilityByDateArrays.map((availArray) => {
           const filteredArraysWithResults = filterDayArray(availArray.availabilityByDateArray);
           const date = availArray.date;
           return {date:date, availabilityByDateArray:filteredArraysWithResults}
         })
 
-        // sort the filtered results by date
         const sortedResults = filtredByDateAvailabilityArrays.sort((a,b) => {
           if(a.date < b.date){
             return -1;
@@ -316,18 +287,11 @@ meetDateRoute.route("/overlapping/:meetingNumber").get( async function (req, res
           }
         });
 
-        // return the array containing all of the availability objects
         return res.send(sortedResults);
       }
     }catch{
       console.log(`l309 - catch error while itterating through array of users `)
-    }
-  
-
-
-  
-
-        
+    }       
 })
 
 module.exports = meetDateRoute;
