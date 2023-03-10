@@ -8,8 +8,8 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["https://git.heroku.com/team-plan-it-app.git", "https://afternoon-everglades-72307.herokuapp.com/"],
-    credentials: true,
+    // origin: ["https://git.heroku.com/team-plan-it-app.git", "https://afternoon-everglades-72307.herokuapp.com/"]
+      origin: "*"
   })
 );
 app.use(express.json());
