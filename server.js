@@ -17,6 +17,10 @@ if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.resolve(__dirname, "../build")));
 }
 
+app.get('/', (_req, res) => {
+    return res.send('Plan it back end running')
+  })
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log("Listening on port " + PORT);
