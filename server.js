@@ -6,12 +6,7 @@ require("dotenv").config();
 
 const app = express();
 
-app.use(
-  cors({
-    origin: ["https://team-plan-it-app.herokuapp.com/", "https://afternoon-everglades-72307.herokuapp.com/", "https://plan-it.team/"]
-     
-  })
-);
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
